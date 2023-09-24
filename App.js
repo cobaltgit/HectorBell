@@ -1,41 +1,66 @@
-import { Component } from 'react';
-import { Text, StyleSheet, View, Image, Pressable } from 'react-native';
+import { Text, StyleSheet, View, Image, Pressable, Switch } from 'react-native';
 import { Audio } from 'expo-av';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default class App extends Component {
+export default function App() {
 
-  constructor(props) {
-    super(props);
-    this.state = { bellImageOpacity: 1 };
-  }
+  const [bellImageOpacity, setBellImageOpacity] = useState(1);
+  const [darkMode, setDarkMode] = useState(false);
 
-  async handlePressIn() {
-    this.setState({ bellImageOpacity: 0.5 });
+  const toggleDarkMode = async () => {
+    try {
+      setDarkMode(!darkMode);
+      await AsyncStorage.setItem("darkMode", darkMode ? "false" : "true");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const darkMode = await AsyncStorage.getItem('darkMode');
+        console.log(darkMode);
+        if (darkMode !== null) setDarkMode(darkMode === "true");
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, []);
+
+  const handlePressIn = async () => {
+    setBellImageOpacity(0.5);
     try {
       const { sound: soundObject, status } = await Audio.Sound.createAsync(
         require('./assets/sound/ding.mp3'),
         { shouldPlay: true }
       );
-      console.debug("Ding!", this.state);
+      console.debug("Ding!");
     } catch (error) {
       console.error(`An error occurred when attempting to ding: ${error}`);
     }
-  }
+  };
 
-  async handlePressOut() {
-    this.setState({ bellImageOpacity: 1 });
-  }
+  const handlePressOut = async () => {
+    setBellImageOpacity(1);
+  };
 
-  render() {
-    return (
-      <View style={styles.container} >
-        <Pressable onPressIn={this.handlePressIn.bind(this)} onPressOut={this.handlePressOut.bind(this)}>
-          <Image source={require('./assets/img/bell.png')} style={{ width: 350, height: 350, opacity: this.state.bellImageOpacity }} resizeMode='contain' />
-        </Pressable>
-        <Text style={styles.bellText}>Press to ding!</Text>
-      </View>
-    );
-  }
+  return (
+    <View style={[styles.container, { backgroundColor: darkMode ? "#1c1c1c" : "white" }]}>
+      <Switch
+        value={darkMode}
+        onValueChange={toggleDarkMode}
+        trackColor={{ false: '#767577', true: '#81b0ff' }}
+        thumbColor={darkMode ? '#f5dd4b' : '#f4f3f4'}
+        style={styles.themeToggle}
+      />
+      <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+        <Image source={require('./assets/img/bell.png')} style={{ width: 350, height: 350, opacity: bellImageOpacity }} resizeMode='contain' />
+      </Pressable>
+      <Text style={[styles.bellText, { color: darkMode ? "white" : "#1c1c1c" }]}>Press to ding!</Text>
+    </View>
+  );
 }
 
 
@@ -50,5 +75,11 @@ const styles = StyleSheet.create({
   bellText: {
     fontSize: 32,
     padding: 16
+  },
+
+  themeToggle: {
+    position: "absolute",
+    top: 20,
+    right: 20
   }
 });
