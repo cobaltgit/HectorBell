@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Hector's Bell",
+    "slug": "HectorBell",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icons/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/img/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.logicielexpo.HectorBell"
+    },
+    "web": {
+      "favicon": "./assets/icons/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0e9748f4-42f4-45c8-a531-42abe689ce5a"
+      }
+    }
+  }
+}
