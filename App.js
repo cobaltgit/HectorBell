@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View, Image, Pressable, Switch } from 'react-native';
+import { Text, StyleSheet, View, Image, Pressable, Switch, useColorScheme } from 'react-native';
 import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function App() {
 
   const [bellImageOpacity, setBellImageOpacity] = useState(1);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(useColorScheme() === "dark");
 
   const toggleDarkMode = async () => {
     try {
@@ -21,8 +21,8 @@ export default function App() {
     (async () => {
       try {
         const darkMode = await AsyncStorage.getItem('darkMode');
-        console.log(darkMode);
-        if (darkMode !== null) setDarkMode(darkMode === "true");
+        if (darkMode === null) return;
+        setDarkMode(darkMode === "true");
       } catch (error) {
         console.error(error);
       }
@@ -47,7 +47,7 @@ export default function App() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: darkMode ? "#1c1c1c" : "white" }]}>
+    <View style={[styles.container, { backgroundColor: darkMode ? "#1c1c1c" : "#fff" }]}>
       <Switch
         value={darkMode}
         onValueChange={toggleDarkMode}
@@ -58,7 +58,7 @@ export default function App() {
       <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
         <Image source={require('./assets/img/bell.png')} style={{ width: 350, height: 350, opacity: bellImageOpacity }} resizeMode='contain' />
       </Pressable>
-      <Text style={[styles.bellText, { color: darkMode ? "white" : "#1c1c1c" }]}>Press to ding!</Text>
+      <Text style={[styles.bellText, { color: darkMode ? "#fff" : "#1c1c1c" }]}>Press to ding!</Text>
     </View>
   );
 }
